@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     label3->setGeometry(30, 560,  80,  60);
 
 
-    command = new QTextEdit(this);
+    command = new Command(this);
     command ->setGeometry(30, 600, 740, 140);
 
 }
