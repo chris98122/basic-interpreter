@@ -6,9 +6,9 @@
 #include <QTextEdit>
 #include <QMenu>
 #include <QMenuBar>
-#include "Console.h"
 
 #include "Command.h"
+#include "Codelist.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -23,15 +23,13 @@ public:
 
     QMenu * menu;
 
-    Console *input;
-    QTextEdit *output;
-
     QTextEdit *command;
 
-    QLabel *label2;
-    QLabel *label1;
 
     QLabel *label3;
+    CodeList * codelist;
+
+
 
     static const int WINDOW_WIDTH = 800;
     static const int WINDOW_HEIGHT = 800;
@@ -39,6 +37,9 @@ public:
 public  slots:
         void open_file();
         void save_file();
+
+        void insert_codeline(QString s);
+        void show_code();
 private:
     Ui::MainWindow *ui;
 };

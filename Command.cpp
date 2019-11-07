@@ -1,5 +1,4 @@
 #include "Command.h"
-#include "Console.h"
 #include <QKeyEvent>
 #include <QTextLine>
 #include <QTextCursor>
@@ -23,8 +22,8 @@ void Command::keyPressEvent(QKeyEvent *event)
        cursor.movePosition(QTextCursor::End);
        cursor.select(QTextCursor::LineUnderCursor);
        QString lastLine = cursor.selectedText();
-       newLineWritten(lastLine);
-       process(lastLine);
+       if(lastLine.size())
+            process(lastLine);
     }
     QTextEdit::keyPressEvent(event);
 }
@@ -33,13 +32,17 @@ void Command::process( QString s)
     if(!s.compare("RUN"))
     {
             qDebug("RUN");
+            return;
     }
     if(!s.compare("LIST"))
     {
+        showCode();
+           return;
     }
      if(!s.compare("CLEAR"))
      {
-
+       this->clear();
+        return;
      }
      if(!s.compare("HELP"))
      {
@@ -48,10 +51,13 @@ void Command::process( QString s)
          this->write("LIST:This command lists the steps in the program in numerical sequence.");
          this->write("CLEAR This command deletes the program so the user can start entering a new one.");
          this->write("QUIT:Typing QUIT exits from the BASIC interpreter by calling exit(0). ");
-
+         return;
      }
      if(!s.compare("QUIT"))
      {
         exit(0);
      }
+
+      newLineWritten(s);
+
 }

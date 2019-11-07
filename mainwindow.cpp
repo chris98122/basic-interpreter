@@ -5,10 +5,10 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QString>
-
+#include "Codelist.h"
 #include <QTextEdit>
 #include <QFileDialog>
-#include "Console.h"
+#include "Command.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("basic interpreter");
     this->setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    input = new Console(this);
 
     menu= this->menuBar()->addMenu("&File");
 
@@ -31,36 +30,21 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(  openfile);
     menu->addAction( savefile );
 
-    label2 = new QLabel(this);
-    label2->setText("input");
-
-
-    label2->setGeometry(30, 260, 40,  60);
-
-    input ->setGeometry(30, 300, 740, 260);
-
-    input->write("1 ");
-
-
-    label1 = new QLabel(this);
-    label1->setText("output");
-
-
-    label1->setGeometry(30, 20,  50,  60);
-
-    output = new QTextEdit(this);
-    output ->setGeometry(30, 60, 740, 200);
-    output->setReadOnly(true);
 
     label3 = new QLabel(this);
     label3->setText("command");
 
 
-    label3->setGeometry(30, 560,  80,  60);
+    label3->setGeometry(30, 10,  80,  60);
 
 
     command = new Command(this);
-    command ->setGeometry(30, 600, 740, 140);
+    command ->setGeometry(30, 50, 740, 740);
+
+
+    codelist = new CodeList();
+    connect( command, SIGNAL(newLineWritten(QString)), this,SLOT(  insert_codeline(QString)));
+    connect( command, SIGNAL(showCode( )), this,SLOT(  show_code()));
 
 }
 
@@ -78,15 +62,18 @@ void MainWindow::open_file()
         qDebug()<<"Can't open the file!"<<endl;
     }
 
-    this->input->clear();
 
     for(int i = 1;!file.atEnd();i++) {
         QByteArray line = file.readLine();
         QString str(line);
-        this->input->write(line);
+        this->command->append(line);
     }
 }
 
+void MainWindow::insert_codeline(QString s)
+{
+    this->codelist->insert_codeline(s);
+}
 
 void MainWindow::save_file()
 {
@@ -98,8 +85,22 @@ void MainWindow::save_file()
 
     QTextStream out(&file);
     //读取console里面的text
-    QStringList list = input->toPlainText().split("\n");
+    QStringList list = command->toPlainText().split("\n");
     for(int i = 0;i < list.size();i++) {
-        out<<  list[i].mid(2)<< "\n";
+        out<<  list[i] << "\n";
     }
+}
+
+void MainWindow:: show_code()
+{
+    codeline *p = this->codelist->head;
+    p=p->next;
+    while(p)
+    {
+        std::string * s =  p->code;
+        std::string line = std::to_string( p->linenum) ;
+        this->command->append(QString((line + " " + *s ).c_str()));
+        p = p->next;
+    }
+
 }

@@ -12,8 +12,10 @@ class Command: public QTextEdit
     Q_OBJECT
 public:
     Command(QWidget *parent = nullptr);
+
 signals:
     void newLineWritten(QString newline);
+    void showCode( );
 
 public slots:
     void write(QString msg);
