@@ -5,6 +5,8 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QString>
+
+#include <QTextEdit>
 #include <QFileDialog>
 #include "Console.h"
 MainWindow::MainWindow(QWidget *parent)
@@ -29,18 +31,37 @@ MainWindow::MainWindow(QWidget *parent)
     menu->addAction(  openfile);
     menu->addAction( savefile );
 
-    input ->setGeometry(30, 320, 740, 260);
+    label2 = new QLabel(this);
+    label2->setText("input");
+
+
+    label2->setGeometry(30, 260, 40,  60);
+
+    input ->setGeometry(30, 300, 740, 260);
 
     input->write("1 ");
 
-    output = new Console(this);
-    output ->setGeometry(30, 30, 740, 260);
 
-    /*
-    for (std::string s: lex) {
-        std::cout << s << std::endl;
-    }
-    */
+    label1 = new QLabel(this);
+    label1->setText("output");
+
+
+    label1->setGeometry(30, 20,  50,  60);
+
+    output = new QTextEdit(this);
+    output ->setGeometry(30, 60, 740, 200);
+    output->setReadOnly(true);
+
+    label3 = new QLabel(this);
+    label3->setText("command");
+
+
+    label3->setGeometry(30, 560,  80,  60);
+
+
+    command = new QTextEdit(this);
+    command ->setGeometry(30, 600, 740, 140);
+
 }
 
 MainWindow::~MainWindow()

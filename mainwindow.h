@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+#include <QTextEdit>
 #include <QMenu>
 #include <QMenuBar>
 #include "Console.h"
@@ -21,10 +22,17 @@ public:
     QMenu * menu;
 
     Console *input;
-    Console *output;
+    QTextEdit *output;
+
+    QTextEdit *command;
+
+    QLabel *label2;
+    QLabel *label1;
+
+    QLabel *label3;
 
     static const int WINDOW_WIDTH = 800;
-    static const int WINDOW_HEIGHT = 600;
+    static const int WINDOW_HEIGHT = 800;
 
 public  slots:
         void open_file();

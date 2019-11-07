@@ -23,7 +23,7 @@ void Console::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Backspace)
         {
         QTextCursor cursor = this->textCursor();
-        qDebug(std::to_string( cursor.columnNumber() ).c_str());
+        //qDebug(std::to_string( cursor.columnNumber() ).c_str());
         if(cursor.columnNumber()  <= 2) return;
 
         cursor.clearSelection();
