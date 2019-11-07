@@ -20,6 +20,7 @@ public slots:
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
+    void process(QString s);
 };
 
 #endif // CONSOLE_H

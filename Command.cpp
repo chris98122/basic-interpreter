@@ -24,6 +24,34 @@ void Command::keyPressEvent(QKeyEvent *event)
        cursor.select(QTextCursor::LineUnderCursor);
        QString lastLine = cursor.selectedText();
        newLineWritten(lastLine);
+       process(lastLine);
     }
     QTextEdit::keyPressEvent(event);
+}
+void Command::process( QString s)
+{
+    if(!s.compare("RUN"))
+    {
+            qDebug("RUN");
+    }
+    if(!s.compare("LIST"))
+    {
+    }
+     if(!s.compare("CLEAR"))
+     {
+
+     }
+     if(!s.compare("HELP"))
+     {
+         this->write("available commands:RUN,LIST,CLEAR,HELP,QUIT. ");
+         this->write("RUN:This command starts program execution beginning at the lowest-numbered line. ");
+         this->write("LIST:This command lists the steps in the program in numerical sequence.");
+         this->write("CLEAR This command deletes the program so the user can start entering a new one.");
+         this->write("QUIT:Typing QUIT exits from the BASIC interpreter by calling exit(0). ");
+
+     }
+     if(!s.compare("QUIT"))
+     {
+        exit(0);
+     }
 }
