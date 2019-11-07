@@ -57,6 +57,8 @@ void MainWindow::open_file()
         qDebug()<<"Can't open the file!"<<endl;
     }
 
+    this->input->clear();
+
     for(int i = 1;!file.atEnd();i++) {
         QByteArray line = file.readLine();
         QString str(line);
@@ -77,6 +79,6 @@ void MainWindow::save_file()
     //读取console里面的text
     QStringList list = input->toPlainText().split("\n");
     for(int i = 0;i < list.size();i++) {
-        out<<  list[i] << "\n";
+        out<<  list[i].mid(2)<< "\n";
     }
 }
