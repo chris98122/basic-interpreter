@@ -18,6 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Codelist.cpp \
     Command.cpp \
+    Lexer.cpp \
+    Parser.cpp \
     main.cpp \
     mainwindow.cpp\
 
@@ -26,6 +28,8 @@ SOURCES += \
 HEADERS += \
     Codelist.h \
     Command.h \
+    Lexer.h \
+    Parser.h \
     mainwindow.h
 
 

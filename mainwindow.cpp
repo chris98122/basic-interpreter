@@ -72,7 +72,12 @@ void MainWindow::open_file()
 
 void MainWindow::insert_codeline(QString s)
 {
-    this->codelist->insert_codeline(s);
+    bool *ok;
+    int linenum= (s.split(" ")[0]).toInt(ok);
+    if(ok)
+        this->codelist->insert_codeline(s);
+   // else
+        // this->interpreter->run(s);
 }
 
 void MainWindow::save_file()
