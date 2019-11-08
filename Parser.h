@@ -14,6 +14,8 @@ struct Variable
 class Statement
 {
     //kind
+protected:
+    int linenum;
 
 };
 
@@ -65,12 +67,13 @@ class Parser
 {
 public:
     Parser();
+    bool linenum_mode;
 
     std::map<std::string,Variable *> symbol_table;
 
     std::list<Statement *> statement_list;
 
-    Statement *parse(  std::list<token>* token_list);
+    Statement *parse(std::list<Token>* token_list);
 
 };
 #endif // PARSER_H

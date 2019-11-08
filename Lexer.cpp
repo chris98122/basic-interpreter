@@ -23,10 +23,10 @@ Lexer::Lexer()
     TOKEN_MAP["INPUT"] = token::INPUT;
     TOKEN_MAP["REM"] = token::REM;
 }
-std::list<token> * Lexer::lex_a_line(const std::string& input)
+std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std::string *errormessage)
 {
      //循环，每次split 空格
-     std::list<token> *result = new std::list<token>;
+     std::list<Token> *result = new std::list<Token>;
 
      QString input_str( input.c_str());
 
@@ -57,7 +57,7 @@ std::list<token> * Lexer::lex_a_line(const std::string& input)
             }
             else
             {
-                result->push_back(TOKEN_MAP[split_str[i].toStdString()]);
+                result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
                 qDebug()<< split_str[i] ;
             }
         }
@@ -73,7 +73,8 @@ std::list<token> * Lexer::lex_a_line(const std::string& input)
             split_str[i].toInt(&ok);
             if(ok)
             {
-                result->push_back(token::INT);
+
+                result->push_back(Token(token::INT,split_str[i].toInt(&ok)));
                 qDebug()<< "INT"<<split_str[i] ;
                 continue;
             }
@@ -81,19 +82,21 @@ std::list<token> * Lexer::lex_a_line(const std::string& input)
             std:: string variable_name = split_str[i].toStdString();
             if( isvalid_variable_name(variable_name ) )//naming rules unknow
             {
-                result->push_back(token::ID);
+                result->push_back(Token(token::ID));
                 qDebug()<< "ID"<<split_str[i] ;
                 continue;
             }
             else
             {
                     result->push_back(token::ERROR);
-                    qDebug()<< "ERROR invalid variable name "<<split_str[i] ;
-                    continue;
+                    *errormessage =  "ERROR!Invalid variable name " + split_str[i].toStdString() ;
+                    *lex_ok = false;
+                     return result;
             }
 
         }
      }
+     *lex_ok = true;
      return result;
 }
 

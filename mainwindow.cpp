@@ -116,6 +116,7 @@ void MainWindow:: show_code()
     while(p)
     {
         std::string * s =  p->code;
+
         std::string line = std::to_string( p->linenum) ;
         this->command->append(QString((line + " " + *s ).c_str()));
         p = p->next;
@@ -131,8 +132,19 @@ void MainWindow::interpret()
     p=p->next;
     while(p)
     {
-        std::list<token>*token_list = this->lexer->lex_a_line( *(p->code));
-        //this->parser->parse(token_list);
+
+        std::string line = std::to_string( p->linenum) ;
+        bool lex_ok  ;
+        std::string error_meassgae;
+        std::list<Token>*token_list = this->lexer->lex_a_line(line + " " + *(p->code) , &lex_ok,&error_meassgae);
+        if(lex_ok)
+        {
+            //this->parser->parse(token_list);
+        }
+        else
+        {
+            this->command->append(QString(error_meassgae.c_str()));
+        }
         p = p->next;
     }
 }
