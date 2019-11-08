@@ -73,14 +73,16 @@ void MainWindow::open_file()
         QByteArray line = file.readLine();
         QString str(line);
         this->command->append(line);
+        this->insert_codeline(str);
     }
 }
 
 void MainWindow::insert_codeline(QString s)
 {
-    int linenum = (s.split(" ")[0]).toInt();
+    bool ok;
+    int linenum = (s.split(" ")[0]).toInt(&ok);
 
-    if(linenum >0)
+    if(ok && linenum >0)
         this->codelist->insert_codeline(s);
    // else
         // this->interpreter->run(s);
@@ -126,10 +128,7 @@ void MainWindow::interpret()
     p=p->next;
     while(p)
     {
-        std::string * s =  p->code;
-        std::string line = std::to_string( p->linenum) ;
-        // lex a line
-        this->lexer->lex_a_line(line);
+        this->lexer->lex_a_line( *(p->code));
         p = p->next;
     }
 }

@@ -7,7 +7,7 @@
 
 
 enum token
-{ IF,THEN,LET,REM,GOTO,END,PRINT,ASSIGN,GT,LT,PLUS,MINUS, INT,INPUT }  ;
+{ IF,THEN,LET,REM,GOTO,END,PRINT,ASSIGN,GT,LT,PLUS,MINUS, INT,INPUT,ID ,ERROR }  ;
 
 class Lexer
 {
@@ -17,7 +17,7 @@ public:
 
    // std::list<token> tokens;
 
-    std::list<token> lex_a_line(const std::string& input);
+    std::list<token>*  lex_a_line(const std::string& input);
 };
 
 

@@ -4,6 +4,8 @@
 #include <QTextCursor>
 
 #include <QTextEdit>
+
+#include <QString>
 Command::Command(QWidget *parent) : QTextEdit(parent)
 {
 
