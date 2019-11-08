@@ -4,7 +4,6 @@
 
 #include <QString>
 #include <QDebug>
-
 bool isvalid_variable_name(std::string s);
 Lexer::Lexer()
 {
@@ -19,6 +18,8 @@ Lexer::Lexer()
     TOKEN_MAP["<"] = token::LT;
     TOKEN_MAP["+"] = token::PLUS;
     TOKEN_MAP["-"] = token::MINUS;
+    TOKEN_MAP["*"] = token::MULTI;
+    TOKEN_MAP["/"] = token::DIVIDE;
     TOKEN_MAP["INPUT"] = token::INPUT;
     TOKEN_MAP["REM"] = token::REM;
 }
@@ -28,6 +29,18 @@ std::list<token> * Lexer::lex_a_line(const std::string& input)
      std::list<token> *result = new std::list<token>;
 
      QString input_str( input.c_str());
+
+     input_str.replace('='," = ");
+
+     input_str.replace('+'," + ");
+
+     input_str.replace('/'," / ");
+
+     input_str.replace('*'," * ");
+     input_str.replace('<'," < ");
+
+
+     input_str.replace('>'," > ");
 
      QStringList split_str = input_str.split(" ");
 
@@ -74,9 +87,9 @@ std::list<token> * Lexer::lex_a_line(const std::string& input)
             }
             else
             {
-                result->push_back(token::ERROR);
-                qDebug()<< "ERROR invalid variable name "<<split_str[i] ;
-                continue;
+                    result->push_back(token::ERROR);
+                    qDebug()<< "ERROR invalid variable name "<<split_str[i] ;
+                    continue;
             }
 
         }
@@ -96,4 +109,5 @@ bool isvalid_variable_name(std::string s)
         if(!( (s[i] - 'A' >=0 && s[i] -'Z' <= 0  )|| (s[i] - 'i' >= 0 && s[i] -'z' <=0) || (s[i] == '_') || (s[i] -'9' <=0 && s[i]-'0' >=0)))
             return false;
     }
+    return true;
 }
