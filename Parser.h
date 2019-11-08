@@ -6,11 +6,6 @@
 
 #include "Lexer.h"
 #include <QString>
-struct Variable
-{
-    std::string name;
-    int value;
-};
 class Statement
 {
     //kind
@@ -26,7 +21,14 @@ class Print_statement: public Statement
 
 class Let_statement: public Statement
 {
-
+public:
+    std::string id;
+    int expression_value;
+    Let_statement( std::string id , int expression_value)
+    {
+        this->id = id;
+        this->expression_value = expression_value;
+    }
 };
 class Input_statement: public Statement
 {
@@ -36,28 +38,15 @@ class Input_statement: public Statement
 class Goto_statement: public Statement
 {
 
+public:
+    int dest;
+    Goto_statement(int value)
+    {
+        this->dest =value;
+    }
 };
 
 class If_statement: public Statement
-{
-
-};
-
-class Exp
-{
-    //kind
-
-};
-
-class IntExp :public Exp
-{
-
-};
-class IdExp :public Exp
-{
-
-};
-class OpExp :public Exp
 {
 
 };
@@ -69,11 +58,13 @@ public:
     Parser();
     bool linenum_mode;
 
-    std::map<std::string,Variable *> symbol_table;
+    std::map<std::string,int > symbol_table;
 
-    std::list<Statement *> statement_list;
+    std::map<int,Statement *> statement_list;
 
-    Statement *parse(std::list<Token>* token_list);
+    Statement *parse(std::list<Token>* token_list,bool *ok , std::string *errormessage);
+
+    int parse_exp(std::list<Token>* token_list,bool *ok , std::string *errormessage);
 
 };
 #endif // PARSER_H

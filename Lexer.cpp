@@ -22,6 +22,8 @@ Lexer::Lexer()
     TOKEN_MAP["/"] = token::DIVIDE;
     TOKEN_MAP["INPUT"] = token::INPUT;
     TOKEN_MAP["REM"] = token::REM;
+    TOKEN_MAP["("]=token::LEFTPAR;
+    TOKEN_MAP[")"]=token::RIGHTPAR;
 }
 std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std::string *errormessage)
 {
@@ -31,16 +33,13 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
      QString input_str( input.c_str());
 
      input_str.replace('='," = ");
-
      input_str.replace('+'," + ");
-
      input_str.replace('/'," / ");
-
      input_str.replace('*'," * ");
      input_str.replace('<'," < ");
-
-
      input_str.replace('>'," > ");
+     input_str.replace('('," ( ");
+     input_str.replace(')'," ) ");
 
      QStringList split_str = input_str.split(" ");
 
@@ -82,7 +81,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
             std:: string variable_name = split_str[i].toStdString();
             if( isvalid_variable_name(variable_name ) )//naming rules unknow
             {
-                result->push_back(Token(token::ID));
+                result->push_back(Token(token::ID,variable_name));
                 qDebug()<< "ID"<<split_str[i] ;
                 continue;
             }
