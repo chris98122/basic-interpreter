@@ -160,7 +160,6 @@ int  Parser::parse_exp(std::list<Token>* token_list,bool *ok , std::string *erro
     bool exp_legal = is_exp_legal(token_list);
     if(exp_legal){
         // do the calculation and return int
-        std::list<token> reverse_polish_list = reverse_polish_expression(token_list);
     }
     else
     {
@@ -176,22 +175,58 @@ bool is_op(token input)
 }
 bool is_exp_legal(std::list<Token>* token_list)
 {
-    std::vector<Token> token_vec;
-    std::list<Token> token_list_tmp = *token_list;
-    for(int i = 0 ; i< token_list->size();i++)
+    enum exp_token{EXP,OP,LEFTPAR,RIGHTPAR};
+    std::stack<exp_token> token_stack;
+    while(!token_list->empty())
     {
-        token_vec.push_back(token_list_tmp.front());
-        token_list_tmp.pop_front();
-    }
-    for(int i = 0; i< token_vec.size() - 1;i++)
-    {
-        if(is_op(token_vec[i].token_type) && is_op(token_vec[i+1].token_type) )
+        switch(token_list->front().token_type)
         {
-            return false;
+            case token::ID:
+                token_stack.push(EXP);//reduce  exp->ID
+                break;
+            case token::INT:
+                token_stack.push(EXP);//reduce exp->INT
+                break;
+            case token::LEFTPAR:
+                token_stack.push(LEFTPAR);//shift
+                break;
+            case token::RIGHTPAR:
+                token_stack.push(RIGHTPAR);//shift
+                break;
+            default:
+            {
+                if(is_op(token_list->front().token_type)) //OP->PLUS | MINUS| MULTI|DIVIDE
+                {
+                     token_stack.push(OP);
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
+        //看一下token_stack 能不能 reduce
+        //pop 到vector 里面遍历 ok就push一个EXP回去 只有两种reduce 情况 1.exp->exp OP exp  2.exp->(exp)
+        //所以正好只需要POP三个出来
+        std::vector<exp_token> token_vec;
+        for(int i=0;i<3;i++)
+        {
+            token_vec.push_back(token_stack.top());
+            token_stack.pop();
+        }
+        //开始查看vector里面这三个exp_token能不能REDUCE
+        for(int i=0;i<3;i++)
+        {
+
+        }
+
+
+
+
+
     }
+
     return true;
-    //其实还有括号匹配要做
 }
 
 
@@ -200,12 +235,8 @@ std::list<token> reverse_polish_expression(std::list<Token>* token_list)
 
 }
 
-//exp->ID
-//exp->exp OP exp
-//exp->INT
-//exp->(exp)
 
-//OP->PLUS | MINUS| MULTI|DIVIDE
+
 
 //todo: LET, PRINT, and INPUT statements can be executed directly by typing them without a line number
 
