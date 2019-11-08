@@ -22,6 +22,7 @@ void Command::keyPressEvent(QKeyEvent *event)
        cursor.movePosition(QTextCursor::End);
        cursor.select(QTextCursor::LineUnderCursor);
        QString lastLine = cursor.selectedText();
+
        if(lastLine.size())
             process(lastLine);
     }
@@ -32,6 +33,7 @@ void Command::process( QString s)
     if(!s.compare("RUN"))
     {
             qDebug("RUN");
+            run();
             return;
     }
     if(!s.compare("LIST"))

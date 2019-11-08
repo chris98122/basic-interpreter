@@ -16,6 +16,7 @@ public:
 signals:
     void newLineWritten(QString newline);
     void showCode( );
+    void run();
 
 public slots:
     void write(QString msg);

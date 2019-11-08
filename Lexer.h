@@ -3,17 +3,21 @@
 
 #include <QString>
 #include <list>
+#include <map>
+
+
+enum token
+{ IF,THEN,LET,REM,GOTO,END,PRINT,ASSIGN,GT,LT,PLUS,MINUS, INT,INPUT }  ;
+
 class Lexer
 {
 public:
     Lexer();
+     std::map<std::string, token> TOKEN_MAP;
 
-    enum token
-    { IF,THEN,LET,REM,GOTO,END,PRINT,EQ,GT,LT,PLUS,MINUS, INT,INPUT }  ;
+   // std::list<token> tokens;
 
-    std::list<token> tokens;
-
-    std::list<token> lex_a_line(std::string);
+    std::list<token> lex_a_line(const std::string& input);
 };
 
 

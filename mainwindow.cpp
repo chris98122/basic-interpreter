@@ -9,6 +9,9 @@
 #include <QTextEdit>
 #include <QFileDialog>
 #include "Command.h"
+
+#include "Lexer.h"
+#include <vector>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -46,6 +49,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect( command, SIGNAL(newLineWritten(QString)), this,SLOT(  insert_codeline(QString)));
     connect( command, SIGNAL(showCode( )), this,SLOT(  show_code()));
 
+    connect( command, SIGNAL(run( )), this,SLOT(interpret()));
+    lexer = new Lexer();
+
 }
 
 MainWindow::~MainWindow()
@@ -72,9 +78,9 @@ void MainWindow::open_file()
 
 void MainWindow::insert_codeline(QString s)
 {
-    bool *ok;
-    int linenum= (s.split(" ")[0]).toInt(ok);
-    if(ok)
+    int linenum = (s.split(" ")[0]).toInt();
+
+    if(linenum >0)
         this->codelist->insert_codeline(s);
    // else
         // this->interpreter->run(s);
@@ -98,8 +104,10 @@ void MainWindow::save_file()
 
 void MainWindow:: show_code()
 {
+    qDebug()<<"SHOW CODE!"<<endl;
+
     codeline *p = this->codelist->head;
-    p=p->next;
+    p = p->next;
     while(p)
     {
         std::string * s =  p->code;
@@ -108,4 +116,20 @@ void MainWindow:: show_code()
         p = p->next;
     }
 
+}
+
+void MainWindow::interpret()
+{
+    qDebug()<<"interpret!"<<endl;
+
+    codeline *p = this->codelist->head;
+    p=p->next;
+    while(p)
+    {
+        std::string * s =  p->code;
+        std::string line = std::to_string( p->linenum) ;
+        // lex a line
+        this->lexer->lex_a_line(line);
+        p = p->next;
+    }
 }

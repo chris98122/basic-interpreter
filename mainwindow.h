@@ -7,6 +7,7 @@
 #include <QMenu>
 #include <QMenuBar>
 
+#include "Lexer.h"99
 #include "Command.h"
 #include "Codelist.h"
 QT_BEGIN_NAMESPACE
@@ -29,7 +30,7 @@ public:
     QLabel *label3;
     CodeList * codelist;
 
-
+    Lexer *lexer ;
 
     static const int WINDOW_WIDTH = 800;
     static const int WINDOW_HEIGHT = 800;
@@ -40,6 +41,8 @@ public  slots:
 
         void insert_codeline(QString s);
         void show_code();
+
+        void  interpret();
 private:
     Ui::MainWindow *ui;
 };
