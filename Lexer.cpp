@@ -35,6 +35,8 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
      input_str.replace('='," = ");
      input_str.replace('+'," + ");
      input_str.replace('/'," / ");
+
+     input_str.replace('-'," - ");
      input_str.replace('*'," * ");
      input_str.replace('<'," < ");
      input_str.replace('>'," > ");
@@ -57,7 +59,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
             else
             {
                 result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
-                qDebug()<< split_str[i] ;
+               // qDebug()<< split_str[i] ;
             }
         }
         else
@@ -74,7 +76,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
             {
 
                 result->push_back(Token(token::INT,split_str[i].toInt(&ok)));
-                qDebug()<< "INT"<<split_str[i] ;
+                //qDebug()<< "INT"<<split_str[i] ;
                 continue;
             }
             // ID?
@@ -82,7 +84,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
             if( isvalid_variable_name(variable_name ) )//naming rules unknow
             {
                 result->push_back(Token(token::ID,variable_name));
-                qDebug()<< "ID"<<split_str[i] ;
+                //qDebug()<< "ID"<<split_str[i] ;
                 continue;
             }
             else

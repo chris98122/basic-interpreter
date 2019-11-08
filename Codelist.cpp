@@ -30,7 +30,7 @@ void CodeList::insert_codeline(QString qs)
            codeline * q = p->next;
            p->next = new codeline(linenum,s);
            p->next->next =q;
-           qDebug()<<"INSERT!"<<endl;
+           //qDebug()<<"INSERT!"<<endl;
 
            return;
        }
@@ -38,7 +38,7 @@ void CodeList::insert_codeline(QString qs)
        p = p->next;
     }
 
-    qDebug()<<"INSERT!"<<endl;
+   // qDebug()<<"INSERT!"<<endl;
     p->next = new codeline(linenum,s);
 
 

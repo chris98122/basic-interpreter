@@ -6,9 +6,9 @@
 
 #include "Lexer.h"
 #include <QString>
+class Exp;
 class Statement
 {
-    //kind
 protected:
     int linenum;
 
@@ -17,8 +17,8 @@ protected:
 class Print_statement: public Statement
 {
 public:
-       int expression_value;
-        Print_statement(int expression_value)
+        Exp *  expression_value;
+        Print_statement(Exp *  expression_value)
         {
             this->expression_value = expression_value;
         }
@@ -29,8 +29,8 @@ class Let_statement: public Statement
 {
 public:
     std::string id;
-    int expression_value;
-    Let_statement( std::string id , int expression_value)
+    Exp * expression_value;
+    Let_statement( std::string id ,Exp * expression_value)
     {
         this->id = id;
         this->expression_value = expression_value;
@@ -61,12 +61,49 @@ public:
 class If_statement: public Statement
 {
 public:
-    int expression_value;
+    Exp * expression_value;
     int dest;
-    If_statement(int expression_value , int dest)
+    If_statement(Exp * expression_value , int dest)
     {
         this->expression_value = expression_value;
         this->dest =dest;
+    }
+};
+class Exp
+{
+
+};
+class OpExp:public Exp
+{
+public:
+    Exp * leftvalue;
+    Exp * rightvalue;
+    token operation;
+
+    OpExp(Exp * l,token op,Exp * r)
+    {
+        this->leftvalue = l;
+        this->operation =op;
+        this->rightvalue = r;
+    }
+};
+
+class IntExp:public Exp
+{
+public:
+    int value;
+    IntExp(int v)
+    {
+        this->value =v;
+    }
+};
+class VarExp:public Exp
+{
+public:
+    std::string var_name;
+    VarExp(std::string s)
+    {
+        this->var_name=s;
     }
 };
 
@@ -83,7 +120,7 @@ public:
 
     Statement *parse(std::list<Token>* token_list,bool *ok , std::string *errormessage);
 
-    int parse_exp(std::list<Token>* token_list,bool *ok , std::string *errormessage);
+    Exp * parse_exp(std::list<Token>* token_list,bool *ok , std::string *errormessage);
 
 };
 #endif // PARSER_H

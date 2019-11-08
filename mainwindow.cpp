@@ -140,7 +140,15 @@ void MainWindow::interpret()
         std::list<Token>*token_list = this->lexer->lex_a_line(line + " " + *(p->code) , &lex_ok,&error_meassgae);
         if(lex_ok)
         {
-             this->parser->parse(token_list, &parse_ok,&error_meassgae);
+
+//            for(int i=0;i<token_list->size();i++)
+//            {
+//                    qDebug()<<token_list->front().token_type;
+//                    token_list->push_back(token_list->front());
+//                    token_list->pop_front();
+//            }
+             if(token_list->size() >= 1)
+                 this->parser->parse(token_list, &parse_ok,&error_meassgae);
              if(parse_ok)
              {
                  //run
