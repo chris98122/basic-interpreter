@@ -7,9 +7,9 @@
 #include <QMenu>
 #include <QMenuBar>
 
+#include "Parser.h"
 #include "Lexer.h"
 
-#include "Parser.h"
 #include "Command.h"
 #include "Codelist.h"
 QT_BEGIN_NAMESPACE

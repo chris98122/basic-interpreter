@@ -11,6 +11,8 @@
 #include "Command.h"
 
 #include "Lexer.h"
+
+#include "Parser.h"
 #include <vector>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect( command, SIGNAL(run( )), this,SLOT(interpret()));
     lexer = new Lexer();
+    parser = new Parser();
 
 }
 
@@ -128,7 +131,8 @@ void MainWindow::interpret()
     p=p->next;
     while(p)
     {
-        this->lexer->lex_a_line( *(p->code));
+        std::list<token>*token_list = this->lexer->lex_a_line( *(p->code));
+        //this->parser->parse(token_list);
         p = p->next;
     }
 }

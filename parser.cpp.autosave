@@ -16,4 +16,4 @@ Parser::Parser()
 //exp->exp OP exp
 //exp->INT
 
-//OP->PLUS
+//OP->PLUS | MINUS| MULTI|DIVIDE
