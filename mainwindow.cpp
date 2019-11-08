@@ -135,11 +135,20 @@ void MainWindow::interpret()
 
         std::string line = std::to_string( p->linenum) ;
         bool lex_ok  ;
+        bool parse_ok;
         std::string error_meassgae;
         std::list<Token>*token_list = this->lexer->lex_a_line(line + " " + *(p->code) , &lex_ok,&error_meassgae);
         if(lex_ok)
         {
-            //this->parser->parse(token_list);
+             this->parser->parse(token_list, &parse_ok,&error_meassgae);
+             if(parse_ok)
+             {
+                 //run
+             }
+             else
+             {
+                 this->command->append(QString(error_meassgae.c_str()));
+             }
         }
         else
         {

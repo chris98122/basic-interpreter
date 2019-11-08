@@ -16,6 +16,12 @@ protected:
 
 class Print_statement: public Statement
 {
+public:
+       int expression_value;
+        Print_statement(int expression_value)
+        {
+            this->expression_value = expression_value;
+        }
 
 };
 
@@ -30,9 +36,15 @@ public:
         this->expression_value = expression_value;
     }
 };
+
 class Input_statement: public Statement
 {
-
+public:
+    std::string id;
+    Input_statement(std::string n)
+    {
+        this->id = n;
+    }
 };
 
 class Goto_statement: public Statement
@@ -48,7 +60,14 @@ public:
 
 class If_statement: public Statement
 {
-
+public:
+    int expression_value;
+    int dest;
+    If_statement(int expression_value , int dest)
+    {
+        this->expression_value = expression_value;
+        this->dest =dest;
+    }
 };
 
 

@@ -81,15 +81,67 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
             }
             case token::IF:
             {
+              std::list<Token>  token_list_tmp;
+              while(token_list->front().token_type != token::THEN)
+              {
+                  token_list_tmp.push_back(token_list->front());
+                  token_list->pop_front();
+              }
+              //找到THEN
+                int expression_value = parse_exp(&token_list_tmp, ok , errormessage);
+              //IF exp THEN INT
+                  token_list->pop_front();
+                if(token_list->front().token_type == token::INT)
+                {
+                    int dest = token_list->front().value;
+                    If_statement * r = new If_statement(expression_value , dest);
+                    this->statement_list[linenum] = r;
+                    return r;
 
+                }
+                else
+                {
+                    *ok =false;
+                    return new Statement();
+                }
             }
             case token::PRINT:
             {
+                //PRINT exp
 
+                int expression_value = parse_exp(token_list, ok , errormessage);
+                if(ok)
+                {
+                     if(linenum_mode)
+                     {
+                         Print_statement* r =  new Print_statement( expression_value );
+                         this->statement_list[linenum] = r;
+                         return r;
+                     }
+                }
+                else
+                {
+                    *ok =false;
+                    return new Statement();
+                }
             }
             case token::INPUT:
             {
-
+                //INPUT var
+                if(token_list->front().token_type == token::ID)
+                {
+                    if(linenum_mode)
+                    {
+                    Input_statement * r = new Input_statement(token_list->front().name);
+                    this->statement_list[linenum] = r;
+                    return r;
+                    }
+                }
+                else
+                {
+                    *ok =false;
+                    return new Statement();
+                }
             }
             default:
                  *errormessage = "syntax error" ;
@@ -147,11 +199,6 @@ std::list<token> reverse_polish_expression(std::list<Token>* token_list)
 {
 
 }
-//LET ID ASSIGN exp
-//GOTO INT
-//IF exp THEN INT
-//PRINT exp
-//INPUT var
 
 //exp->ID
 //exp->exp OP exp
