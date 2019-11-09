@@ -3,6 +3,8 @@
 #include "Parser.h"
 
 #include <QDebug>
+#include <iostream>
+#include <exception>
 
 Runner::Runner(std::map<int,Statement *> statement_list)
 {
@@ -23,13 +25,17 @@ void Runner::run( bool rerun, int input)
         start_point =statement_list.find(start_line);
     }
 
-    for(auto i =  start_point ; i != statement_list.end();)
+    auto i =  start_point ;
+
+    qDebug()<<(( (statement_list.find(90))->second)->kind == statement_kind::End);
+
+    for( i =  start_point ; i != statement_list.end();)
     {
         Statement *running_statement = i->second;
-
         std::string line =std::to_string(i->first) ;
 
-        qDebug()<<line.c_str()<<endl;
+       qDebug()<<line.c_str()<<endl;
+
         switch(running_statement->kind)
         {
             case statement_kind::Rem:
@@ -43,7 +49,6 @@ void Runner::run( bool rerun, int input)
                   //拜托command 打印一下
                   if(ok)
                   {
-                       qDebug()<<"PRINT"<<exp_val<<endl;
                       Commandprint(QString(std::to_string(exp_val).c_str()));
                       i++;
                       break;
@@ -62,14 +67,12 @@ void Runner::run( bool rerun, int input)
                   int dest= ((If_statement *)running_statement)->dest;
                   bool ok;
                   int exp_val = calculation_exp(exp,&ok);
-                    qDebug()<<"IF DEST"<<dest<<endl;
-
-                    qDebug()<<"IF CONDITION"<<exp_val<<endl;
                   if(ok && exp_val == 1)
                   {
                       //goto dest
                       //设置i, 重新开始循环
                       i = statement_list.find(dest);//
+                      break;
                   }//不管跳不跳转都要break
                   else if(ok)
                   {
@@ -91,7 +94,6 @@ void Runner::run( bool rerun, int input)
                 int exp_val = calculation_exp(exp,&ok);
                 if(ok)
                 {
-                    qDebug()<<"LET VAR"<< exp_val<<endl;
 
                     symbol_table[name] = exp_val;//赋值就完事了
                      i++;
@@ -108,7 +110,7 @@ void Runner::run( bool rerun, int input)
                 int dest= ((Goto_statement *)running_statement)->dest;
                 //goto dest
                 //设置i, 重新开始循环
-                 qDebug()<<"GOTO DEST"<<dest<<endl;
+                //qDebug()<<"GOTO DEST"<<dest<<endl;
                 i = statement_list.find(dest);
                 break;
              }
@@ -132,8 +134,11 @@ void Runner::run( bool rerun, int input)
                 }
             }
             case statement_kind::End:
-                qDebug()<<"END"<<endl;
-                i = statement_list.end();
+                {
+                  qDebug()<<"END"<<endl;
+                  i = statement_list.end();
+                  break;
+                }
         }
     }
 

@@ -71,6 +71,7 @@ void MainWindow::open_file()
     }
 
 
+    this->codelist->clear();
     for(int i = 1;!file.atEnd();i++) {
         QByteArray line = file.readLine();
         QString str(line);
@@ -170,6 +171,7 @@ void MainWindow::interpret()
            connect(runner,SIGNAL(input_a_val()) ,command,SLOT(set_is_inputtiing_variable()));
            qDebug()<<"run the parses code"<<endl;
            runner->run(false,0);
+
     }
 
 }

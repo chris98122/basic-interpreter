@@ -18,8 +18,8 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
         linenum = token_list->front().value;
         token_list->pop_front();
     }
-   *errormessage = "syntax error" ;
-
+    *errormessage = "syntax error" ;
+    *ok=true;
     qDebug()<< "parsing start" ;
     while (!token_list->empty()) {
         Token t = token_list->front();
@@ -36,7 +36,7 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
             }
              case token::END:
             {
-                *ok = true;
+                qDebug()<< "LEX END LINENUM"<<linenum ;
                 End_statement * r = new End_statement();
                 this->statement_list[linenum] = r;
                 return r;
@@ -158,9 +158,6 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                     {
                     Input_statement * r = new Input_statement(token_list->front().name);
                     this->statement_list[linenum] = r;
-
-                    *ok = true;
-
                     qDebug()<< linenum<<"parsing INPUT OK" ;
                     return r;
                     }
