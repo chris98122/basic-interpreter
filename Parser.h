@@ -7,20 +7,34 @@
 #include "Lexer.h"
 #include <QString>
 class Exp;
+enum statement_kind{ Print, Let , Input, Goto,If,Rem };
 class Statement
 {
-protected:
-    int linenum;
+
+public:
+   statement_kind  kind;
 
 };
+
+class Rem_statement: public Statement
+{
+public:
+        Rem_statement()
+        {
+            this->kind = Rem;
+        }
+
+};
+
 
 class Print_statement: public Statement
 {
 public:
-        Exp *  expression_value;
-        Print_statement(Exp *  expression_value)
+        Exp *  expression;
+        Print_statement(Exp *  expression)
         {
-            this->expression_value = expression_value;
+            this->kind = Print;
+            this->expression= expression;
         }
 
 };
@@ -29,11 +43,12 @@ class Let_statement: public Statement
 {
 public:
     std::string id;
-    Exp * expression_value;
-    Let_statement( std::string id ,Exp * expression_value)
+    Exp * expression;
+    Let_statement( std::string id ,Exp * expression)
     {
+        this->kind = Let;
         this->id = id;
-        this->expression_value = expression_value;
+        this->expression = expression;
     }
 };
 
@@ -43,6 +58,7 @@ public:
     std::string id;
     Input_statement(std::string n)
     {
+        this->kind = Input;
         this->id = n;
     }
 };
@@ -54,6 +70,7 @@ public:
     int dest;
     Goto_statement(int value)
     {
+        this->kind = Goto;
         this->dest =value;
     }
 };
@@ -61,11 +78,12 @@ public:
 class If_statement: public Statement
 {
 public:
-    Exp * expression_value;
+    Exp * expression;
     int dest;
-    If_statement(Exp * expression_value , int dest)
+    If_statement(Exp *  expression , int dest)
     {
-        this->expression_value = expression_value;
+        this->kind = If;
+        this->expression = expression;
         this->dest =dest;
     }
 };
@@ -113,8 +131,6 @@ class Parser
 public:
     Parser();
     bool linenum_mode;
-
-    std::map<std::string,int > symbol_table;
 
     std::map<int,Statement *> statement_list;
 

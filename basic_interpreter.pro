@@ -20,6 +20,7 @@ SOURCES += \
     Command.cpp \
     Lexer.cpp \
     Parser.cpp \
+    Runner.cpp \
     main.cpp \
     mainwindow.cpp\
 
@@ -30,6 +31,7 @@ HEADERS += \
     Command.h \
     Lexer.h \
     Parser.h \
+    Runner.h \
     mainwindow.h
 
 

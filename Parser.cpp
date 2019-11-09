@@ -26,10 +26,14 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
         token_list->pop_front();
         switch(t.token_type)
         {
+            case token::REM:
+            {
+                *ok = true;
+                return new Rem_statement();
+            }
             case token::LET:
             {
                   qDebug()<< "LET" ;
-
                 if(token_list->front().token_type == token::ID)
                 {
                     std::string id = token_list->front().name;
@@ -270,7 +274,7 @@ Exp * create_exp_tree(std::list<Token>  token_list)
 
     }
 
-    if( exp_stack.size() == 1  )
+    if( exp_stack.size() == 1)
         return exp_stack.top();
 }
 bool is_exp_legal(std::list<Token>  token_list)
@@ -280,7 +284,6 @@ bool is_exp_legal(std::list<Token>  token_list)
     std::stack<exp_token> token_stack;
     while(!token_list.empty())
     {
-       qDebug()<< " is_exp_legal";
         switch(token_list.front().token_type)
         {
             case token::ID:

@@ -8,7 +8,7 @@
 #include <QString>
 Command::Command(QWidget *parent) : QTextEdit(parent)
 {
-
+    this->is_inputting_variable=false;
 }
 
 void Command::write(QString msg)
@@ -32,6 +32,21 @@ void Command::keyPressEvent(QKeyEvent *event)
 }
 void Command::process( QString s)
 {
+    if(is_inputting_variable)
+    {
+        //把这个值看看是不是INT，不是就报错
+        bool ok;
+        int input= s.toInt(&ok);
+        if(!ok)
+        {
+            this->write("Input Error! "+ s +" is not an Interger!");
+            return;
+        }
+        //是就用 signal传给RUNNER让runnner继续跑
+        input_finish(input);
+        return;
+    }
+
     if(!s.compare("RUN"))
     {
             qDebug("RUN");
@@ -64,4 +79,9 @@ void Command::process( QString s)
 
       newLineWritten(s);
 
+}
+
+void Command::set_is_inputtiing_variable()
+{
+    this->is_inputting_variable = true;
 }

@@ -6,7 +6,7 @@
 #include <QTextEdit>
 #include <QMenu>
 #include <QMenuBar>
-
+#include "Runner.h"
 #include "Parser.h"
 #include "Lexer.h"
 
@@ -34,7 +34,7 @@ public:
 
     Lexer *lexer ;
     Parser *parser;
-
+    Runner *runner;
     static const int WINDOW_WIDTH = 800;
     static const int WINDOW_HEIGHT = 800;
 

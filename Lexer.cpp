@@ -52,15 +52,9 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
         if(this->TOKEN_MAP.find(split_str[i].toStdString()) != this->TOKEN_MAP.end())
         {
             //找到一样的
-            if(TOKEN_MAP[split_str[i].toStdString()] == token::REM)//ignore remark
-            {
-                return NULL;
-            }
-            else
-            {
-                result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
+
+            result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
                // qDebug()<< split_str[i] ;
-            }
         }
         else
         {

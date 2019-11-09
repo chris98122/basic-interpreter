@@ -9,7 +9,7 @@
 #include <QTextEdit>
 #include <QFileDialog>
 #include "Command.h"
-
+#include "Runner.h"
 #include "Lexer.h"
 
 #include "Parser.h"
@@ -54,7 +54,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect( command, SIGNAL(run( )), this,SLOT(interpret()));
     lexer = new Lexer();
     parser = new Parser();
-
+    runner = new Runner();
+    connect(runner,SIGNAL(input_a_var) ,command,SLOT(set_is_inputtiing_variable));
+    connect(command,SIGNAL(input_finish),runner,SLOT(continue_runnning));
+    connect(runner,SIGNAL(Commandprint(QString)) ,command,SLOT(write(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -130,9 +133,9 @@ void MainWindow::interpret()
 
     codeline *p = this->codelist->head;
     p=p->next;
+    bool parse_all_ok =true;
     while(p)
     {
-
         std::string line = std::to_string( p->linenum) ;
         bool lex_ok  ;
         bool parse_ok;
@@ -140,28 +143,32 @@ void MainWindow::interpret()
         std::list<Token>*token_list = this->lexer->lex_a_line(line + " " + *(p->code) , &lex_ok,&error_meassgae);
         if(lex_ok)
         {
-
-//            for(int i=0;i<token_list->size();i++)
-//            {
-//                    qDebug()<<token_list->front().token_type;
-//                    token_list->push_back(token_list->front());
-//                    token_list->pop_front();
-//            }
              if(token_list->size() >= 1)
+             {
                  this->parser->parse(token_list, &parse_ok,&error_meassgae);
-             if(parse_ok)
-             {
-                 //run
-             }
-             else
-             {
-                 this->command->append(QString(error_meassgae.c_str()));
+                 if(parse_ok)
+                 {
+                     //run
+                 }
+                 else
+                 {
+                     this->command->append(QString((line + " " +error_meassgae ).c_str()));
+                     parse_all_ok = false;
+                 }
              }
         }
         else
         {
-            this->command->append(QString(error_meassgae.c_str()));
+            this->command->append(QString((line + " " +error_meassgae ).c_str()));
+            parse_all_ok = false;
         }
         p = p->next;
     }
+    if(  parse_all_ok )
+    {
+
+           runner = new Runner(this->parser->statement_list);
+           qDebug()<<"run the parses code"<<endl;
+    }
+
 }
