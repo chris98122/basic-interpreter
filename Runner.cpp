@@ -6,11 +6,14 @@
 #include <iostream>
 #include <exception>
 
-Runner::Runner(std::map<int,Statement *> statement_list)
+void Runner::setstatementlist(std::map<int,Statement *> statement_list)
 {
     this->statement_list = statement_list;
 }
-
+void Runner::clearSymboltable()
+{
+    this->symbol_table.clear();
+}
 
 void Runner::run( bool rerun, int input)
 {
@@ -61,7 +64,6 @@ void Runner::run( bool rerun, int input)
                 }
             case statement_kind::If:
                 {
-
                   Exp * exp = ((If_statement *)running_statement)->expression;
                   int dest= ((If_statement *)running_statement)->dest;
                   bool ok;

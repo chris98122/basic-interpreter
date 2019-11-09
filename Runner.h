@@ -13,13 +13,14 @@ class Runner: public QWidget
 Q_OBJECT
 public:
     Runner(){};
-    Runner(std::map<int,Statement *> statement_list);
 
     std::map<std::string,int > symbol_table;
 
     std::map<int,Statement *> statement_list;
 
     void run(bool rerun,int input);
+    void setstatementlist(std::map<int,Statement *> statement_list);
+    void clearSymboltable();
 signals:
     void  input_a_val();
     void Commandprint(QString);

@@ -54,6 +54,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect( command, SIGNAL(clearCode( )), this,SLOT(clearCode()));
     lexer = new Lexer();
     parser = new Parser();
+    runner = new Runner( );
+    connect(command,SIGNAL(input_finish(int)),runner,SLOT(continue_runnning(int)));
+    connect(runner,SIGNAL(Commandprint(QString)) ,command,SLOT(write(QString)));
+    connect(runner,SIGNAL(input_a_val()) ,command,SLOT(set_is_inputtiing_variable()));
 }
 
 MainWindow::~MainWindow()
@@ -87,8 +91,8 @@ void MainWindow::insert_codeline(QString s)
 
     if(ok && linenum >0)
         this->codelist->insert_codeline(s);
-   // else
-        // this->interpreter->run(s);
+   else
+         this->interpret_a_line(s);
 }
 
 void MainWindow::save_file()
@@ -143,11 +147,7 @@ void MainWindow::interpret()
              if(token_list->size() >= 1)
              {
                  this->parser->parse(token_list, &parse_ok,&error_meassgae);
-                 if(parse_ok)
-                 {
-                     //run
-                 }
-                 else
+                 if(!parse_ok)
                  {
                      this->command->append(QString((line + " " +error_meassgae ).c_str()));
                      parse_all_ok = false;
@@ -163,12 +163,8 @@ void MainWindow::interpret()
     }
     if(  parse_all_ok )
     {
-
-           runner = new Runner(this->parser->statement_list);
-
-           connect(command,SIGNAL(input_finish(int)),runner,SLOT(continue_runnning(int)));
-           connect(runner,SIGNAL(Commandprint(QString)) ,command,SLOT(write(QString)));
-           connect(runner,SIGNAL(input_a_val()) ,command,SLOT(set_is_inputtiing_variable()));
+           runner->clearSymboltable();
+           runner->setstatementlist(parser->statement_list);
            qDebug()<<"run the parses code"<<endl;
            runner->run(false,0);
 
@@ -184,4 +180,37 @@ void MainWindow::clearCode()
     parser->~Parser();
     lexer = new Lexer();
     parser = new Parser();
+}
+
+void MainWindow::interpret_a_line(QString s)
+{
+    bool lex_ok  ;
+    bool parse_ok;
+    std::string error_meassgae;
+    std::list<Token>*token_list = this->lexer->lex_a_line( s.toStdString() , &lex_ok,&error_meassgae);
+    if(lex_ok)
+    {
+         if(token_list->size() >= 1)
+         {
+             this->parser->setlineMode(false);
+             this->parser->parse(token_list, &parse_ok,&error_meassgae);
+             if(parse_ok)
+             {
+                 Statement * s = this->parser->direct_statement;
+                 std::map<int , Statement *> direct_statement_map;
+                 direct_statement_map[1] = s;
+                 runner->setstatementlist(direct_statement_map);
+                 runner->run(false,0);
+             }
+             else
+             {
+                 this->command->append(QString("unknown command") );
+             }
+         }
+     }
+    else
+    {
+        this->command->append(QString("unknown command") );
+    }
+
 }

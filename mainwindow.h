@@ -46,6 +46,7 @@ public  slots:
         void show_code();
 
         void  interpret();
+        void interpret_a_line(QString s);
         void clearCode();
 private:
     Ui::MainWindow *ui;

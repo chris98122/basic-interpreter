@@ -148,13 +148,17 @@ class Parser
 {
 public:
     Parser();
-    bool linenum_mode;
 
     std::map<int,Statement *> statement_list;
+
+    Statement * direct_statement;
 
     Statement *parse(std::list<Token>* token_list,bool *ok , std::string *errormessage);
 
     Exp * parse_exp(std::list<Token>* token_list,bool *ok , std::string *errormessage);
+    void setlineMode(bool mode);
+private:
 
+    bool linenum_mode;
 };
 #endif // PARSER_H

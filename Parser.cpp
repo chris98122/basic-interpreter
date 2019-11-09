@@ -1,10 +1,13 @@
 #include "Parser.h"
 #include <stack>
 #include <QDebug>
-Parser::Parser()
+Parser::Parser( )
 {
-
     linenum_mode=true;
+}
+void Parser::setlineMode(bool mode)
+{
+    this->linenum_mode = mode;
 }
 Exp * create_exp_tree(std::list<Token>  token_list);
 bool is_exp_legal(std::list<Token>  token_list);
@@ -30,16 +33,34 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
             {
                 *ok = true;
                 Rem_statement * r = new Rem_statement();
-                this->statement_list[linenum] = r;
-                return r;
+                if(linenum_mode)
+                {
+                    this->statement_list[linenum] = r;
+                    return r;
+                }
+                else
+                {
+                    *ok =false;
+                    *errormessage = "REM statement need to have line number" ;
+                    return new Statement();
+                }
 
             }
              case token::END:
             {
                 qDebug()<< "LEX END LINENUM"<<linenum ;
                 End_statement * r = new End_statement();
-                this->statement_list[linenum] = r;
-                return r;
+                if(linenum_mode)
+                {
+                    this->statement_list[linenum] = r;
+                    return r;
+                }
+                else
+                {
+                    *ok =false;
+                    *errormessage = "END statement need to have line number" ;
+                    return new Statement();
+                }
             }
             case token::LET:
             {
@@ -58,13 +79,19 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                         {
                             //assign the value directly
                          // this is run time to do:symbol_table[id] = expression_value;
+
+                            Let_statement* r=  new Let_statement( id ,e);
                             if(linenum_mode)
                             {
-                               qDebug()<< "LET" ;
-                               Let_statement* r=  new Let_statement( id ,e);
                                this->statement_list[linenum] = r;
-                               return r;
                             }
+                            else
+                            {
+
+                                this-> direct_statement =r;
+                            }
+
+                            return r;
                         }
                         else
                         {
@@ -88,10 +115,18 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                      qDebug()<< "GOTO" ;
                 if(token_list->front().token_type == token::INT)
                 {
-
-                    Goto_statement* r=  new Goto_statement( token_list->front().value);
-                    this->statement_list[linenum] = r;
-                    return r;
+                    if(linenum_mode)
+                    {
+                        Goto_statement* r=  new Goto_statement( token_list->front().value);
+                        this->statement_list[linenum] = r;
+                        return r;
+                    }
+                     else
+                    {
+                        *ok =false;
+                        *errormessage = "GOTO statement need to have line number" ;
+                        return new Statement();
+                    }
                 }
                 else
                 {
@@ -114,11 +149,19 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                   token_list->pop_front();
                 if(token_list->front().token_type == token::INT)
                 {
-                    int dest = token_list->front().value;
-                    If_statement * r = new If_statement(e , dest);
-                    this->statement_list[linenum] = r;
-                    return r;
-
+                    if(linenum_mode)
+                    {
+                        int dest = token_list->front().value;
+                        If_statement * r = new If_statement(e , dest);
+                        this->statement_list[linenum] = r;
+                        return r;
+                    }
+                    else
+                   {
+                       *ok =false;
+                       *errormessage = "IF statement need to have line number" ;
+                       return new Statement();
+                   }
                 }
                 else
                 {
@@ -133,15 +176,18 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                    Exp *e = parse_exp(token_list, ok , errormessage);
                 if(ok)
                 {
+
+                    Print_statement* r =  new Print_statement( e );
                      if(linenum_mode)
                      {
-                         Print_statement* r =  new Print_statement( e );
                          this->statement_list[linenum] = r;
 
-                         *ok = true;
-                         qDebug()<< linenum<<"parsing PRINT OK" ;
-                         return r;
                      }
+                     else
+                     {
+                            this-> direct_statement =r;
+                     }
+                     return r;
                 }
                 else
                 {
@@ -154,13 +200,18 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                 //INPUT var
                 if(token_list->front().token_type == token::ID)
                 {
+
+                    Input_statement * r = new Input_statement(token_list->front().name);
                     if(linenum_mode)
                     {
-                    Input_statement * r = new Input_statement(token_list->front().name);
-                    this->statement_list[linenum] = r;
-                    qDebug()<< linenum<<"parsing INPUT OK" ;
-                    return r;
+                        this->statement_list[linenum] = r;
+
                     }
+                    else
+                    {
+                           this-> direct_statement =r;
+                    }
+                    return r;
                 }
                 else
                 {
@@ -169,7 +220,11 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                 }
             }
             default:
-                 *errormessage = "syntax error" ;
+                {
+                    *errormessage = "syntax error" ;
+                    *ok =false;
+                    return new Statement();
+                }
             }
     }
 
