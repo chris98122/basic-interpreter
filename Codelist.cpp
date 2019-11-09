@@ -40,6 +40,17 @@ void CodeList::insert_codeline(QString qs)
 
    // qDebug()<<"INSERT!"<<endl;
     p->next = new codeline(linenum,s);
+}
 
-
+void CodeList::clear()
+{
+    codeline *p = head;
+    while(p->next)
+    {
+        codeline * q = p->next;
+        free(p);
+        p = q;
+    }
+    head = new codeline(0,NULL);
+    qDebug()<<"code list clear!"<<endl;
 }

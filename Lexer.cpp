@@ -32,6 +32,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
 
      QString input_str( input.c_str());
 
+     input_str.replace('\n'," \n ");
      input_str.replace('='," = ");
      input_str.replace('+'," + ");
      input_str.replace('/'," / ");
@@ -52,9 +53,16 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
         if(this->TOKEN_MAP.find(split_str[i].toStdString()) != this->TOKEN_MAP.end())
         {
             //找到一样的
-
-            result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
+            if(TOKEN_MAP[split_str[i].toStdString()] == token::REM)//ignore remark
+            {
+                result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));//就push一个REM
+                break;
+            }
+            else
+            {
+                result->push_back(Token(TOKEN_MAP[split_str[i].toStdString()]));
                // qDebug()<< split_str[i] ;
+            }
         }
         else
         {
@@ -75,6 +83,7 @@ std::list<Token> * Lexer::lex_a_line(const std::string& input,bool *lex_ok , std
             }
             // ID?
             std:: string variable_name = split_str[i].toStdString();
+            // qDebug()<<variable_name.c_str()<<split_str[i] ;
             if( isvalid_variable_name(variable_name ) )//naming rules unknow
             {
                 result->push_back(Token(token::ID,variable_name));
@@ -104,7 +113,7 @@ bool isvalid_variable_name(std::string s)
     }
     for(int i=1;i<size;i++)
     {
-        if(!( (s[i] - 'A' >=0 && s[i] -'Z' <= 0  )|| (s[i] - 'i' >= 0 && s[i] -'z' <=0) || (s[i] == '_') || (s[i] -'9' <=0 && s[i]-'0' >=0)))
+        if(!( (s[i] - 'A' >=0 && s[i] -'Z' <= 0  )|| (s[i] - 'a' >= 0 && s[i] -'z' <=0) || (s[i] == '_') || (s[i] -'9' <=0 && s[i]-'0' >=0)))
             return false;
     }
     return true;

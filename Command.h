@@ -19,6 +19,7 @@ signals:
     void showCode( );
     void run();
     void input_finish(int input);
+    void clearCode();
 
 public slots:
     void write(QString msg);

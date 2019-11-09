@@ -5,6 +5,7 @@
 
 #include <QTextEdit>
 
+#include <QDebug>
 #include <QString>
 Command::Command(QWidget *parent) : QTextEdit(parent)
 {
@@ -13,6 +14,7 @@ Command::Command(QWidget *parent) : QTextEdit(parent)
 
 void Command::write(QString msg)
 {
+      qDebug()<<"WRITE"<<msg<<endl;
     this->append(msg);
 }
 
@@ -34,15 +36,19 @@ void Command::process( QString s)
 {
     if(is_inputting_variable)
     {
+        qDebug()<<"process INPUT"<<endl;
         //把这个值看看是不是INT，不是就报错
         bool ok;
         int input= s.toInt(&ok);
         if(!ok)
         {
-            this->write("Input Error! "+ s +" is not an Interger!");
+            this->write("Input Error! "+ s +" is not an Interger! try again!");
             return;
         }
+
+        qDebug()<<"process INPUT VALID"<<endl;
         //是就用 signal传给RUNNER让runnner继续跑
+        this->is_inputting_variable = false;
         input_finish(input);
         return;
     }
@@ -60,7 +66,9 @@ void Command::process( QString s)
     }
      if(!s.compare("CLEAR"))
      {
-       this->clear();
+        this->clear();
+         //CLEAR THE CODELIIST TOO
+        clearCode();
         return;
      }
      if(!s.compare("HELP"))
@@ -78,10 +86,10 @@ void Command::process( QString s)
      }
 
       newLineWritten(s);
-
 }
 
 void Command::set_is_inputtiing_variable()
 {
+    qDebug()<<"this->is_inputting_variable = true;"<<endl;
     this->is_inputting_variable = true;
 }

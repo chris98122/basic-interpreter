@@ -50,14 +50,10 @@ MainWindow::MainWindow(QWidget *parent)
     codelist = new CodeList();
     connect( command, SIGNAL(newLineWritten(QString)), this,SLOT(  insert_codeline(QString)));
     connect( command, SIGNAL(showCode( )), this,SLOT(  show_code()));
-
     connect( command, SIGNAL(run( )), this,SLOT(interpret()));
+    connect( command, SIGNAL(clearCode( )), this,SLOT(clearCode()));
     lexer = new Lexer();
     parser = new Parser();
-    runner = new Runner();
-    connect(runner,SIGNAL(input_a_var) ,command,SLOT(set_is_inputtiing_variable));
-    connect(command,SIGNAL(input_finish),runner,SLOT(continue_runnning));
-    connect(runner,SIGNAL(Commandprint(QString)) ,command,SLOT(write(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -168,7 +164,18 @@ void MainWindow::interpret()
     {
 
            runner = new Runner(this->parser->statement_list);
+
+           connect(command,SIGNAL(input_finish(int)),runner,SLOT(continue_runnning(int)));
+           connect(runner,SIGNAL(Commandprint(QString)) ,command,SLOT(write(QString)));
+           connect(runner,SIGNAL(input_a_val()) ,command,SLOT(set_is_inputtiing_variable()));
            qDebug()<<"run the parses code"<<endl;
+           runner->run(false,0);
     }
 
+}
+
+
+void MainWindow::clearCode()
+{
+    this->codelist->clear();
 }

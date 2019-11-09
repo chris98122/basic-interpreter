@@ -28,7 +28,8 @@ public slots:
 
 private:
     int start_line;
-    int calculation_exp(Exp *e);
+    int calculation_exp(Exp *e,bool *ok);
+    int CalculationOpExp(int left , token op, int right);
 
 };
 

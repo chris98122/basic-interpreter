@@ -29,7 +29,17 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
             case token::REM:
             {
                 *ok = true;
-                return new Rem_statement();
+                Rem_statement * r = new Rem_statement();
+                this->statement_list[linenum] = r;
+                return r;
+
+            }
+             case token::END:
+            {
+                *ok = true;
+                End_statement * r = new End_statement();
+                this->statement_list[linenum] = r;
+                return r;
             }
             case token::LET:
             {
@@ -127,6 +137,9 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                      {
                          Print_statement* r =  new Print_statement( e );
                          this->statement_list[linenum] = r;
+
+                         *ok = true;
+                         qDebug()<< linenum<<"parsing PRINT OK" ;
                          return r;
                      }
                 }
@@ -145,6 +158,10 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
                     {
                     Input_statement * r = new Input_statement(token_list->front().name);
                     this->statement_list[linenum] = r;
+
+                    *ok = true;
+
+                    qDebug()<< linenum<<"parsing INPUT OK" ;
                     return r;
                     }
                 }
@@ -173,7 +190,6 @@ Exp *  Parser::parse_exp(std::list<Token>* token_list,bool *ok , std::string *er
     bool exp_legal = is_exp_legal(*token_list);
     if(exp_legal){
         qDebug()<< "exp_legal" ;
-
         // create exp tree
        Exp * e = create_exp_tree(*token_list);
        return e;

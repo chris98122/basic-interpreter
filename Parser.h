@@ -7,7 +7,7 @@
 #include "Lexer.h"
 #include <QString>
 class Exp;
-enum statement_kind{ Print, Let , Input, Goto,If,Rem };
+enum statement_kind{ Print, Let , Input, Goto,If,Rem,End };
 class Statement
 {
 
@@ -22,6 +22,17 @@ public:
         Rem_statement()
         {
             this->kind = Rem;
+        }
+
+};
+
+
+class End_statement: public Statement
+{
+public:
+        End_statement()
+        {
+            this->kind = End;
         }
 
 };
@@ -87,9 +98,13 @@ public:
         this->dest =dest;
     }
 };
+
+
+enum exp_kind{ Op,Int,Var};
 class Exp
 {
-
+public:
+        exp_kind kind;
 };
 class OpExp:public Exp
 {
@@ -100,6 +115,7 @@ public:
 
     OpExp(Exp * l,token op,Exp * r)
     {
+        this->kind = Op;
         this->leftvalue = l;
         this->operation =op;
         this->rightvalue = r;
@@ -112,6 +128,7 @@ public:
     int value;
     IntExp(int v)
     {
+        this->kind  = Int;
         this->value =v;
     }
 };
@@ -121,6 +138,7 @@ public:
     std::string var_name;
     VarExp(std::string s)
     {
+        this->kind = Var;
         this->var_name=s;
     }
 };

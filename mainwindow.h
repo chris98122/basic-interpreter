@@ -46,6 +46,7 @@ public  slots:
         void show_code();
 
         void  interpret();
+        void clearCode();
 private:
     Ui::MainWindow *ui;
 };

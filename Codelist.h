@@ -29,8 +29,7 @@ public:
     codeline *head;
 
     void insert_codeline(QString s);
-
-
+    void clear();
 };
 
 
