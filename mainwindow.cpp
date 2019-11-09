@@ -212,5 +212,6 @@ void MainWindow::interpret_a_line(QString s)
     {
         this->command->append(QString("unknown command") );
     }
+     this->parser->setlineMode(true);
 
 }

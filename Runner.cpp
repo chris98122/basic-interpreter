@@ -60,6 +60,7 @@ void Runner::run( bool rerun, int input)
                       Commandprint(QString(( line + " " +  " Print Error! Not a valid expression.").c_str()));
 
                       i = statement_list.end();
+                       break;
                   }
                 }
             case statement_kind::If:
@@ -84,6 +85,7 @@ void Runner::run( bool rerun, int input)
                      {
                       Commandprint(QString(( line + " " +  "If Error! Not a valid expression.").c_str()));
                       i = statement_list.end();
+                       break;
                   }
 
                 }
@@ -104,6 +106,7 @@ void Runner::run( bool rerun, int input)
                 {
                     Commandprint(QString(( line + " " +  "Let Error! Not a valid expression.").c_str()));
                     i = statement_list.end();
+                    break;
                 }
             }
             case statement_kind::Goto:
@@ -160,11 +163,20 @@ int Runner:: calculation_exp(Exp *exp,bool *ok)
                 int right_value = calculation_exp(rightExp,ok );
                 if(ok)
                     return CalculationOpExp(left_value,op , right_value );
-                else return 0;
+                else
+                {
+                    qDebug()<<"calculation_exp right_value  failed";
+                    return 0;
+                }
             }
-             else return 0;
+             else
+            {
+                qDebug()<<"calculation_exp right_value  failed";
+                return 0;
+            }
         }
     case Int:
+          qDebug()<<"IntExp"<<((IntExp *)exp)->value;
         return ((IntExp *)exp)->value;
     case Var:
         std::string var_name=((VarExp *)exp)->var_name;
@@ -181,11 +193,14 @@ int Runner:: calculation_exp(Exp *exp,bool *ok)
             return 0;
         }
     }
+     qDebug()<<"exp kind out of range";
     return 0;
 }
 
 int Runner::CalculationOpExp(int left , token op, int right)
 {
+
+    qDebug()<<"CalculationOpExp"<<left<<op<<right;
     switch (op) {
         case PLUS:
             return left+right;
