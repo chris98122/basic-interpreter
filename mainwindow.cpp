@@ -70,8 +70,8 @@ void MainWindow::open_file()
         qDebug()<<"Can't open the file!"<<endl;
     }
 
-
-    this->codelist->clear();
+    clearCode();
+    this->command->clear();
     for(int i = 1;!file.atEnd();i++) {
         QByteArray line = file.readLine();
         QString str(line);
@@ -180,4 +180,8 @@ void MainWindow::interpret()
 void MainWindow::clearCode()
 {
     this->codelist->clear();
+    lexer->~Lexer();
+    parser->~Parser();
+    lexer = new Lexer();
+    parser = new Parser();
 }

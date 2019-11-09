@@ -27,7 +27,6 @@ void Runner::run( bool rerun, int input)
 
     auto i =  start_point ;
 
-    qDebug()<<(( (statement_list.find(90))->second)->kind == statement_kind::End);
 
     for( i =  start_point ; i != statement_list.end();)
     {
