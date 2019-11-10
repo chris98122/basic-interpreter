@@ -5,11 +5,12 @@
 #include <list>
 #include <map>
 enum token
-{ GT,LT,PLUS,MINUS,MULTI,DIVIDE,IF,THEN,LET,REM,GOTO,END,PRINT,ASSIGN, INT,INPUT,ID ,ERROR ,LEFTPAR,RIGHTPAR,EXP};
+{ LEFTPAR,GT,LT,PLUS,MINUS,MULTI,DIVIDE,RIGHTPAR,IF,THEN,LET,REM,GOTO,END,PRINT,ASSIGN, INT,INPUT,ID ,ERROR ,EXP};
 struct Token{
      token token_type;
      int value;
      std::string name;
+     Token(){};
      Token(token t)
      {
          this->token_type =t;

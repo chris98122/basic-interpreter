@@ -9,9 +9,7 @@ void Parser::setlineMode(bool mode)
 {
     this->linenum_mode = mode;
 }
-Exp * create_exp_tree(std::list<Token>  token_list);
-bool is_exp_legal(std::list<Token>  token_list);
-std::list<token> reverse_polish_expression(std::list<Token>* token_list);
+Exp * create_exp_tree(std::list<Token>  token_list,bool *ok);
 Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *errormessage)
 {
     int linenum;
@@ -231,19 +229,13 @@ Statement *Parser::parse(std::list<Token>* token_list,bool *ok , std::string *er
     *ok = true;
     return new Statement();
 }
-
+std::list<Token>* split_GT_LT(std::list<Token>* token_list, token op);
 Exp *  Parser::parse_exp(std::list<Token>* token_list,bool *ok , std::string *errormessage)
 {
-    //basic it's a calculator
+   Exp * e = create_exp_tree(*token_list,ok);
 
-    std::stack<token> stack;
-
-    qDebug()<< token_list->size();
-    bool exp_legal = is_exp_legal(*token_list);
-    if(exp_legal){
-        qDebug()<< "exp_legal" ;
-        // create exp tree
-       Exp * e = create_exp_tree(*token_list);
+    if(ok  )
+    {
        return e;
     }
     else
@@ -254,174 +246,166 @@ Exp *  Parser::parse_exp(std::list<Token>* token_list,bool *ok , std::string *er
     }
 }
 
-bool is_op(token input)
+void BinaryOp( token op,std::stack<Exp *> *dataStack,bool *ok)
 {
-    return input == token::GT || input==token::LT ||input ==token::PLUS ||input==token::MINUS || input ==token::MULTI || input==token::DIVIDE;
+
+    Exp *left;
+    Exp *right;
+    if(dataStack->size()<2)
+    {
+         qDebug()<<  dataStack->size();
+
+            qDebug()<< " BinaryOp dataStack->size()<2";
+        *ok =false;
+        return;
+    }
+    right = dataStack->top();
+    dataStack->pop();
+    left =dataStack->top();
+    dataStack->pop();
+      qDebug()<< " OK";
+    OpExp *opexp = new OpExp(left,op,right);
+    dataStack->push(opexp);
 }
-
-Exp * create_exp_tree(std::list<Token>  token_list)
+Exp * create_exp_tree(std::list<Token>  token_list,bool *ok)
 {
 
-   qDebug()<< "create_exp_tree";
+    qDebug()<< "create_exp_tree";
+    *ok =true;
 
-   qDebug()<< token_list.size();
     std::stack<Exp *> exp_stack;
     std::stack<token> token_stack;
+    Token lastOp;
+    token topOp;
+    std::stack<token> opStack;
+    std::stack<Exp *> dataStack;
+    qDebug()<< token_list.size();
     while(!token_list.empty())
     {
-        switch(token_list.front().token_type)
+
+        qDebug()<< "PARSE EXP";
+        lastOp = token_list.front();
+        qDebug()<< lastOp.token_type;
+        switch(lastOp.token_type)
         {
-            case token::ID:
-                token_stack.push(EXP);//reduce  exp->ID
-                exp_stack.push(new VarExp(token_list.front().name));
-                break;
             case token::INT:
-                token_stack.push(EXP);//reduce exp->INT
-                exp_stack.push(new IntExp(token_list.front().value));
+                qDebug()<< "EXP token::INT";
+                dataStack.push(new IntExp(lastOp.value));
                 break;
-            case token::LEFTPAR:
-                token_stack.push(LEFTPAR);//shift
+            case token::ID:
+               qDebug()<< "EXP token::ID";
+                dataStack.push(new VarExp(lastOp.name));
                 break;
             case token::RIGHTPAR:
-                token_stack.push(RIGHTPAR);//shift
+             qDebug()<< "RIGHTPAR";
+                while(!opStack.empty() &&( topOp =opStack.top()) != LEFTPAR)
+                {
+                     qDebug()<< "   BinaryOp";
+                        BinaryOp(opStack.top() ,&dataStack,ok);
+
+                        if(!ok)return new Exp();
+
+                     qDebug()<< "BEFORE POP" <<opStack.size();
+                    opStack.pop();
+                }
+                if(!opStack.empty())
+                {
+                    opStack.pop();
+                 }
+
+                if( topOp != LEFTPAR)
+                {
+                    *ok =false;
+                    return new Exp();
+                }
+                 qDebug()<< "BEFORE BREAK";
                 break;
-            default:
-            {
-                if(is_op(token_list.front().token_type)) //OP->PLUS | MINUS| MULTI|DIVIDE
-                {
-                     token_stack.push(token_list.front().token_type);
-//                     if(token_list.front().token_type == PLUS || token_list.front().token_type == MINUS)
-//                     {
-//                         //check if later has MULTI / DIVIDE
-//                         token_list.pop_front();
-//                         token a = token_list.pop_front();
-//                         token b = token_list.pop_front();
-//                         if(b == MULTI ||b =DIVIDE)
-//                         {
-//                             token_stack.push()
-//                         }
-
-//                     }
-
+            case token::LEFTPAR:
+                opStack.push(token::LEFTPAR);
+                break;
+            case MULTI:case DIVIDE:
+                while (!opStack.empty() && opStack.top() >= MULTI) {
+                     BinaryOp(opStack.top(),&dataStack,ok);
+                     if(!ok)return new Exp();
+                     opStack.pop();
                 }
-            }
+                opStack.push(lastOp.token_type);
+                 break;
+            case PLUS:case MINUS:
+                while (!opStack.empty() && opStack.top() >= PLUS) {
+                    BinaryOp(opStack.top(),&dataStack,ok);
+                    if(!ok)return new Exp();
+                    opStack.pop();
+                }
+                opStack.push(lastOp.token_type);
+                 break;
+             case GT:case LT:
+                    while (!opStack.empty() && opStack.top() >= GT) {
+                        BinaryOp(opStack.top(),&dataStack,ok);
+                        if(!ok)return new Exp();
+                        opStack.pop();
+                    }
+                    opStack.push(lastOp.token_type);
+                     break;
         }
-
         token_list.pop_front();
-        std::vector<token> token_vec;
-        if(token_stack.size()>=3)
-         {
-            for(int i = 0;i<3;i++)
-            {
-                token_vec.push_back(token_stack.top());
-                token_stack.pop();
-            }
-
-                if(token_vec[0]==EXP && is_op(token_vec[1])  && token_vec[2] == EXP)
-                {
-                    token_stack.push(EXP);
-                    Exp * right = exp_stack.top();
-                    exp_stack.pop();
-                    Exp * left =exp_stack.top();
-                    exp_stack.pop();
-                    exp_stack.push(new OpExp(left,token_vec[1],right));
-                }
-                else if(token_vec[2]== LEFTPAR && token_vec[1] == EXP && token_vec[0] == RIGHTPAR)
-                {
-                    token_stack.push(EXP);
-                    //exp_stack 不变
-                    continue;
-                }
-                else
-                {
-                     token_stack.push(token_vec[2]);//注意顺序
-                     token_stack.push(token_vec[1]);
-                     token_stack.push(token_vec[0]);
-                }
-         }
-
     }
 
-    if( exp_stack.size() == 1)
-        return exp_stack.top();
-}
-bool is_exp_legal(std::list<Token>  token_list)
-{
-     qDebug()<< token_list.size();
-    enum exp_token{EXP,OP,LEFTPAR,RIGHTPAR};
-    std::stack<exp_token> token_stack;
-    while(!token_list.empty())
+    qDebug()<< "opStack.size() "<<opStack.size() ;
+
+    qDebug()<< "dataStack.size() "<<dataStack.size() ;
+    while (!opStack.empty() ) {
+        qDebug()<<opStack.top() ;
+        BinaryOp(opStack.top(),&dataStack,ok);
+         qDebug()<< *ok;
+        if(!ok)return new Exp();
+        opStack.pop();
+    }
+
+    if(dataStack.size() != 1)
     {
-        switch(token_list.front().token_type)
-        {
-            case token::ID:
-                token_stack.push(EXP);//reduce  exp->ID
-                break;
-            case token::INT:
-                token_stack.push(EXP);//reduce exp->INT
-                break;
-            case token::LEFTPAR:
-                token_stack.push(LEFTPAR);//shift
-                break;
-            case token::RIGHTPAR:
-                token_stack.push(RIGHTPAR);//shift
-                break;
-            default:
-            {
-                if(is_op(token_list.front().token_type)) //OP->PLUS | MINUS| MULTI|DIVIDE
-                {
-                     token_stack.push(OP);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        token_list.pop_front();
-        //看一下token_stack 能不能 reduce
-        //pop 到vector 里面遍历 ok就push一个EXP回去 只有两种reduce 情况 1.exp->exp OP exp  2.exp->(exp)
-        //所以正好只需要POP三个出来
-        std::vector<exp_token> token_vec;
-        if(token_stack.size()>=3)
-         {
-            for(int i=0;i<3;i++)
-            {
-                token_vec.push_back(token_stack.top());
-                token_stack.pop();
-            }
-            //开始查看vector里面这三个exp_token能不能REDUCE 注意这里先不管乘法的优先级
-                if(token_vec[0]==EXP && token_vec[1] == OP && token_vec[2] == EXP)
-                {
-                    token_stack.push(EXP);
-                }
-                else if(token_vec[2]== LEFTPAR && token_vec[1] == EXP && token_vec[0] == RIGHTPAR)
-                {
-                    token_stack.push(EXP);
-                    continue;
-                }
-                else
-                {
-                     token_stack.push(token_vec[2]);//注意顺序
-                     token_stack.push(token_vec[1]);
-                     token_stack.push(token_vec[0]);
-                }
-             }
+        *ok =false;
+        return new Exp();
     }
-    if(token_stack.size() == 1 && token_stack.top() ==EXP)
-        return true;
-    return false;
+    return dataStack.top();
 }
 
-
-std::list<token> reverse_polish_expression(std::list<Token>* token_list)
+std::list<Token>* split_GT_LT(std::list<Token>* token_list, token op)
 {
+    std::vector<Token> token_vec;
+    while(!token_list->empty())
+    {
+        Token t =token_list->front();
+        if(t.token_type!=GT && t.token_type != LT)
+        {
+            token_vec.push_back(t);
+            token_list->pop_front();
+        }
+        else
+        {
+            op = t.token_type;
+            break;
+        }
+    }
+
+    std::list<Token> *res = new  std::list<Token> ;
+    for(int i=0;i<token_vec.size();i++)
+    {
+        res->push_back(token_vec[i]);
+    }
+    if(op)
+    {
+       return  res;
+    }
+    else
+    {
+        *token_list = *res;
+        return NULL;
+    }
+
+    return NULL;
+
+
+
 
 }
-
-
-
-
-//todo: LET, PRINT, and INPUT statements can be executed directly by typing them without a line number
-
