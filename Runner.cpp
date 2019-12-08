@@ -214,6 +214,8 @@ int Runner::CalculationOpExp(int left , token op, int right)
             return left > right;
         case LT:
             return left < right;
+        case ASSIGN:
+            return left == right;
     }
     return 0;
 }

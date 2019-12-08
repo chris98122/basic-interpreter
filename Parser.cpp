@@ -339,7 +339,7 @@ Exp * create_exp_tree(std::list<Token>  token_list,bool *ok)
                 }
                 opStack.push(lastOp.token_type);
                  break;
-             case GT:case LT:
+             case GT:case LT:case ASSIGN:
                     while (!opStack.empty() && opStack.top() >= GT) {
                         BinaryOp(opStack.top(),&dataStack,ok);
                         if(!ok)return new Exp();
